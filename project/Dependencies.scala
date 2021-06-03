@@ -16,5 +16,5 @@ object Dependencies {
     "io.janstenpickle"                          %% "trace4cats-jaeger-integration-test" % Versions.trace4cats
   lazy val trace4catsModel = "io.janstenpickle" %% "trace4cats-model"                   % Versions.trace4cats
 
-  lazy val jaegerThrift = "io.jaegertracing"                    % "jaeger-thrift"                   % Versions.jaeger
+  lazy val jaegerThrift = "io.jaegertracing" % "jaeger-thrift" % Versions.jaeger
 }
