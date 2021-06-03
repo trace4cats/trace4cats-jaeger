@@ -7,6 +7,11 @@
 
 [Jaeger] exporters for [Trace4Cats].
 
+Add it to your `build.sbt`:
+
+```scala
+"io.janstenpickle" %% "trace4cats-jaeger-thrift-exporter" % "<version>"
+```
 
 ## Contributing
 
