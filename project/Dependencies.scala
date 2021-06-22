@@ -8,6 +8,9 @@ object Dependencies {
     val trace4cats = "0.12.0-RC1+146-d193db1e"
 
     val jaeger = "1.6.0"
+
+    val kindProjector = "0.13.0"
+    val betterMonadicFor = "0.3.1"
   }
 
   lazy val trace4catsExporterCommon = "io.janstenpickle" %% "trace4cats-exporter-common" % Versions.trace4cats
@@ -17,4 +20,7 @@ object Dependencies {
   lazy val trace4catsModel = "io.janstenpickle" %% "trace4cats-model"                   % Versions.trace4cats
 
   lazy val jaegerThrift = "io.jaegertracing" % "jaeger-thrift" % Versions.jaeger
+
+  lazy val kindProjector = ("org.typelevel" % "kind-projector"     % Versions.kindProjector).cross(CrossVersion.full)
+  lazy val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % Versions.betterMonadicFor
 }
