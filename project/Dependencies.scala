@@ -8,6 +8,7 @@ object Dependencies {
     val trace4cats = "0.12.0-RC2"
     val trace4catsJaegerIntegrationTest = "0.12.0-RC2"
 
+    val collectionCompat = "2.4.4"
     val jaeger = "1.6.0"
 
     val kindProjector = "0.13.0"
@@ -20,7 +21,8 @@ object Dependencies {
   lazy val trace4catsJaegerIntegrationTest =
     "io.janstenpickle" %% "trace4cats-jaeger-integration-test" % Versions.trace4catsJaegerIntegrationTest
 
-  lazy val jaegerThrift = "io.jaegertracing" % "jaeger-thrift" % Versions.jaeger
+  lazy val collectionCompat = "org.scala-lang.modules" %% "scala-collection-compat" % Versions.collectionCompat
+  lazy val jaegerThrift = "io.jaegertracing"            % "jaeger-thrift"           % Versions.jaeger
 
   lazy val kindProjector = ("org.typelevel" % "kind-projector"     % Versions.kindProjector).cross(CrossVersion.full)
   lazy val betterMonadicFor = "com.olegpy" %% "better-monadic-for" % Versions.betterMonadicFor
