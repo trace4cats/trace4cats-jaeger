@@ -11,7 +11,7 @@
 Add it to your `build.sbt`:
 
 ```scala
-"io.janstenpickle" %% "trace4cats-jaeger-thrift-exporter" % "<version>"
+"io.janstenpickle" %% "trace4cats-jaeger-thrift-exporter" % "0.12.0-RC2"
 ```
 
 ## Contributing
