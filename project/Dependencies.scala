@@ -8,7 +8,7 @@ object Dependencies {
     val trace4cats = "0.12.0-RC2"
     val trace4catsJaegerIntegrationTest = "0.12.0-RC2"
 
-    val collectionCompat = "2.4.4"
+    val collectionCompat = "2.5.0"
     val jaeger = "1.6.0"
 
     val kindProjector = "0.13.0"
