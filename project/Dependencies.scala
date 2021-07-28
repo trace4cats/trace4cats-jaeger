@@ -6,8 +6,8 @@ object Dependencies {
     val scala213 = "2.13.6"
     val scala301 = "3.0.1"
 
-    val trace4cats = "0.12.0-RC2"
-    val trace4catsJaegerIntegrationTest = "0.12.0-RC2"
+    val trace4cats = "0.12.0-RC2+17-d73c7ff3"
+    val trace4catsJaegerIntegrationTest = "0.12.0-RC2+7-e4062471"
 
     val collectionCompat = "2.5.0"
     val jaeger = "1.6.0"
