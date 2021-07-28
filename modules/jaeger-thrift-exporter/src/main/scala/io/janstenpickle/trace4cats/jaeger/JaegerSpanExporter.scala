@@ -2,7 +2,6 @@ package io.janstenpickle.trace4cats.jaeger
 
 import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
-import alleycats.std.iterable._
 import cats.Foldable
 import cats.data.NonEmptyList
 import cats.effect.kernel.{Async, Resource, Sync}
@@ -113,7 +112,7 @@ object JaegerSpanExporter {
 
             process match {
               case None =>
-                val grouped: Iterable[(Process, java.util.List[Span])] =
+                val grouped: List[(Process, java.util.List[Span])] =
                   batch.spans
                     .foldLeft(Map.empty[String, ListBuffer[Span]]) { case (acc, span) =>
                       acc.updated(
@@ -124,6 +123,7 @@ object JaegerSpanExporter {
                     }
                     .view
                     .map { case (service, spans) => (new Process(service), spans.asJava) }
+                    .toList
                 grouped.traverse_((send _).tupled)
 
               case Some(tp) =>
