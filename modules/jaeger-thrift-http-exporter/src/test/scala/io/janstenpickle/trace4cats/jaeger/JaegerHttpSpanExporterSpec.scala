@@ -1,14 +1,16 @@
 package io.janstenpickle.trace4cats.jaeger
 
-import java.time.Instant
-
-import cats.effect.IO
+import cats.effect.{IO, Resource}
 import fs2.Chunk
 import io.janstenpickle.trace4cats.`export`.SemanticTags
 import io.janstenpickle.trace4cats.model.{Batch, TraceProcess}
 import io.janstenpickle.trace4cats.test.jaeger.BaseJaegerSpec
+import org.http4s.blaze.client.BlazeClientBuilder
 
-class JaegerSpanExporterSpec extends BaseJaegerSpec {
+import java.time.Instant
+import scala.concurrent.ExecutionContext.global
+
+class JaegerHttpSpanExporterSpec extends BaseJaegerSpec {
   it should "Send a batch of spans to jaeger" in forAll { (batch: Batch[Chunk], process: TraceProcess) =>
     val updatedBatch =
       Batch(
@@ -21,16 +23,20 @@ class JaegerSpanExporterSpec extends BaseJaegerSpec {
           )
         )
       )
+    val exporter = BlazeClientBuilder[IO](global).resource.flatMap { client =>
+      Resource.eval(JaegerHttpSpanExporter[IO, Chunk](client, process, "localhost", 14268))
+    }
 
     testExporter(
-      JaegerSpanExporter[IO, Chunk](Some(process), "localhost", 6831),
+      exporter,
       updatedBatch,
       batchToJaegerResponse(
         updatedBatch,
         process,
         SemanticTags.kindTags,
         SemanticTags.statusTags("span."),
-        SemanticTags.processTags
+        SemanticTags.processTags,
+        internalSpanFormat = "jaeger"
       )
     )
   }
