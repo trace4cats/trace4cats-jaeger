@@ -32,6 +32,8 @@ object JaegerHttpSpanCompleter {
     config: CompleterConfig
   ): Resource[F, SpanCompleter[F]] =
     Resource.eval(Slf4jLogger.create[F]).flatMap { implicit logger: Logger[F] =>
-      QueuedSpanCompleter[F](process, JaegerHttpSpanExporter[F, Chunk](client, process, uri), config)
+      Resource
+        .eval(JaegerHttpSpanExporter[F, Chunk](client, process, uri))
+        .flatMap(QueuedSpanCompleter[F](process, _, config))
     }
 }
