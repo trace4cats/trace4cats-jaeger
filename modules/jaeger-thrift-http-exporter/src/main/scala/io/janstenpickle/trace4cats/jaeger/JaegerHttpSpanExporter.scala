@@ -1,11 +1,11 @@
 package io.janstenpickle.trace4cats.jaeger
 
-import cats.Foldable
 import cats.effect.kernel.Async
 import cats.syntax.either._
 import cats.syntax.flatMap._
 import cats.syntax.foldable._
 import cats.syntax.functor._
+import cats.{ApplicativeError, Foldable}
 import fs2.{Chunk, Stream}
 import io.jaegertracing.thriftjava.{Batch => JaegerBatch, Process, Span}
 import io.janstenpickle.trace4cats.`export`.HttpSpanExporter
@@ -22,15 +22,16 @@ object JaegerHttpSpanExporter {
 
   private val thriftBinary: List[Header.ToRaw] = List(`Content-Type`(MediaType.application.`vnd.apache.thrift.binary`))
 
-  private implicit def jaegerBatchEncoder[F[_]: Async](implicit
-    serializer: TSerializer
+  private implicit def jaegerBatchEncoder[F[_]](implicit
+    serializer: TSerializer,
+    F: ApplicativeError[F, Throwable]
   ): EntityEncoder[F, JaegerBatch] =
     new EntityEncoder[F, JaegerBatch] {
       def toEntity(a: JaegerBatch): Entity[F] = try {
         val payload = serializer.serialize(a)
         Entity[F](Stream.chunk[F, Byte](Chunk.array(payload)), Some(payload.length.toLong))
       } catch {
-        case NonFatal(e) => Entity[F](Stream.eval(Async[F].raiseError(e)), None)
+        case NonFatal(e) => Entity[F](Stream.eval(F.raiseError(e)), None)
       }
 
       val headers: Headers = Headers(thriftBinary)
