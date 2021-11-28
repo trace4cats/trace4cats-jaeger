@@ -8,7 +8,6 @@ import io.janstenpickle.trace4cats.model.{Batch, CompletedSpan, TraceProcess}
 import io.janstenpickle.trace4cats.test.jaeger.BaseJaegerSpec
 import org.http4s.blaze.client.BlazeClientBuilder
 
-import scala.concurrent.ExecutionContext.global
 import scala.concurrent.duration._
 
 class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
@@ -16,7 +15,7 @@ class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
     val updatedSpan =
       span.copy(start = Instant.now(), end = Instant.now(), attributes = span.attributes -- excludedTagKeys)
     val batch = Batch(Chunk(updatedSpan.build(process)))
-    val completer = BlazeClientBuilder[IO](global).resource.flatMap { client =>
+    val completer = BlazeClientBuilder[IO].resource.flatMap { client =>
       JaegerHttpSpanCompleter[IO](
         client,
         process,
