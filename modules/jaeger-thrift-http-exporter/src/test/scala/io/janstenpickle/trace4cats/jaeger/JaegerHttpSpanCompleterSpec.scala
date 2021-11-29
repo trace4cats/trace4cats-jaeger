@@ -6,17 +6,27 @@ import fs2.Chunk
 import io.janstenpickle.trace4cats.`export`.{CompleterConfig, SemanticTags}
 import io.janstenpickle.trace4cats.model.{Batch, CompletedSpan, TraceProcess}
 import io.janstenpickle.trace4cats.test.jaeger.BaseJaegerSpec
+import org.http4s.blaze.client.BlazeClientBuilder
 
 import scala.concurrent.duration._
 
-class JaegerSpanCompleterSpec extends BaseJaegerSpec {
+class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
   it should "Send a span to jaeger" in forAll { (span: CompletedSpan.Builder, process: TraceProcess) =>
     val updatedSpan =
       span.copy(start = Instant.now(), end = Instant.now(), attributes = span.attributes -- excludedTagKeys)
     val batch = Batch(Chunk(updatedSpan.build(process)))
+    val completer = BlazeClientBuilder[IO].resource.flatMap { client =>
+      JaegerHttpSpanCompleter[IO](
+        client,
+        process,
+        "localhost",
+        14268,
+        config = CompleterConfig(batchTimeout = 50.millis)
+      )
+    }
 
     testCompleter(
-      JaegerSpanCompleter[IO](process, "localhost", 6831, config = CompleterConfig(batchTimeout = 50.millis)),
+      completer,
       updatedSpan,
       process,
       batchToJaegerResponse(
@@ -24,7 +34,8 @@ class JaegerSpanCompleterSpec extends BaseJaegerSpec {
         process,
         SemanticTags.kindTags,
         SemanticTags.statusTags("span."),
-        SemanticTags.processTags
+        SemanticTags.processTags,
+        internalSpanFormat = "jaeger"
       )
     )
   }

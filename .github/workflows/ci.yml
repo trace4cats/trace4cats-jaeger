@@ -66,7 +66,7 @@ jobs:
         run: docker-compose down
 
       - name: Compress target directories
-        run: tar cf targets.tar target modules/jaeger-thrift-exporter/target project/target
+        run: tar cf targets.tar target modules/jaeger-thrift-common/target modules/jaeger-thrift-exporter/target modules/jaeger-thrift-http-exporter/target project/target
 
       - name: Upload target directories
         uses: actions/upload-artifact@v2

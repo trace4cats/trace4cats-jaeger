@@ -13,6 +13,7 @@ Add it to your `build.sbt`:
 
 ```scala
 "io.janstenpickle" %% "trace4cats-jaeger-thrift-exporter" % "0.12.0"
+"io.janstenpickle" %% "trace4cats-jaeger-thrift-http-exporter" % "<early-release>"
 ```
 
 ## Contributing

@@ -26,19 +26,37 @@ lazy val publishSettings = commonSettings ++ Seq(
 lazy val root = (project in file("."))
   .settings(noPublishSettings)
   .settings(name := "Trace4Cats Jaeger")
-  .aggregate(`jaeger-thrift-exporter`)
+  .aggregate(`jaeger-thrift-common`, `jaeger-thrift-exporter`, `jaeger-thrift-http-exporter`)
 
-lazy val `jaeger-thrift-exporter` =
-  (project in file("modules/jaeger-thrift-exporter"))
+lazy val `jaeger-thrift-common` =
+  (project in file("modules/jaeger-thrift-common"))
     .settings(publishSettings)
     .settings(
-      name := "trace4cats-jaeger-thrift-exporter",
+      name := "trace4cats-jaeger-thrift-common",
       libraryDependencies ++= Seq(
         Dependencies.collectionCompat,
         Dependencies.jaegerThrift,
-        Dependencies.trace4catsExporterCommon,
         Dependencies.trace4catsKernel,
-        Dependencies.trace4catsModel
-      ),
+        Dependencies.trace4catsModel,
+        Dependencies.trace4catsExporterCommon
+      )
+    )
+
+lazy val `jaeger-thrift-exporter` =
+  (project in file("modules/jaeger-thrift-exporter"))
+    .dependsOn(`jaeger-thrift-common`)
+    .settings(publishSettings)
+    .settings(
+      name := "trace4cats-jaeger-thrift-exporter",
+      libraryDependencies ++= Seq(Dependencies.trace4catsJaegerIntegrationTest).map(_ % Test)
+    )
+
+lazy val `jaeger-thrift-http-exporter` =
+  (project in file("modules/jaeger-thrift-http-exporter"))
+    .dependsOn(`jaeger-thrift-common`)
+    .settings(publishSettings)
+    .settings(
+      name := "trace4cats-jaeger-thrift-http-exporter",
+      libraryDependencies ++= Seq(Dependencies.trace4catsExporterHttp),
       libraryDependencies ++= Seq(Dependencies.trace4catsJaegerIntegrationTest).map(_ % Test)
     )
