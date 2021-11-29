@@ -5,7 +5,7 @@ import cats.syntax.either._
 import cats.syntax.flatMap._
 import cats.syntax.foldable._
 import cats.syntax.functor._
-import cats.{ApplicativeError, Foldable}
+import cats.{ApplicativeThrow, Foldable}
 import fs2.{Chunk, Stream}
 import io.jaegertracing.thriftjava.{Batch => JaegerBatch, Process, Span}
 import io.janstenpickle.trace4cats.`export`.HttpSpanExporter
@@ -22,16 +22,15 @@ object JaegerHttpSpanExporter {
 
   private val thriftBinary: List[Header.ToRaw] = List(`Content-Type`(MediaType.application.`vnd.apache.thrift.binary`))
 
-  private implicit def jaegerBatchEncoder[F[_]](implicit
-    serializer: TSerializer,
-    F: ApplicativeError[F, Throwable]
+  private implicit def jaegerBatchEncoder[F[_]: ApplicativeThrow](implicit
+    serializer: TSerializer
   ): EntityEncoder[F, JaegerBatch] =
     new EntityEncoder[F, JaegerBatch] {
       def toEntity(a: JaegerBatch): Entity[F] = try {
         val payload = serializer.serialize(a)
-        Entity[F](Stream.chunk[F, Byte](Chunk.array(payload)), Some(payload.length.toLong))
+        Entity(Stream.chunk(Chunk.array(payload)), Some(payload.length.toLong))
       } catch {
-        case NonFatal(e) => Entity[F](Stream.eval(F.raiseError(e)), None)
+        case NonFatal(e) => Entity(Stream.raiseError[F](e), None)
       }
 
       val headers: Headers = Headers(thriftBinary)
@@ -49,10 +48,10 @@ object JaegerHttpSpanExporter {
     client: Client[F],
     process: TraceProcess,
     host: String = "localhost",
-    port: Int = 14268
-  ): F[SpanExporter[F, G]] = Uri.fromString(s"http://$host:$port/api/traces").liftTo[F].flatMap { uri =>
-    apply(client, process, uri)
-  }
+    port: Int = 14268,
+    protocol: String = "http"
+  ): F[SpanExporter[F, G]] =
+    Uri.fromString(s"$protocol://$host:$port/api/traces").liftTo[F].flatMap(uri => apply(client, process, uri))
 
   def apply[F[_]: Async, G[_]: Foldable](client: Client[F], process: TraceProcess, uri: Uri): F[SpanExporter[F, G]] =
     Async[F].catchNonFatal(new TSerializer()).map { implicit serializer: TSerializer =>
