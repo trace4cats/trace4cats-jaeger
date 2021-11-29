@@ -7,7 +7,6 @@ import io.janstenpickle.trace4cats.`export`.{CompleterConfig, SemanticTags}
 import io.janstenpickle.trace4cats.model.{Batch, CompletedSpan, TraceProcess}
 import io.janstenpickle.trace4cats.test.jaeger.BaseJaegerSpec
 
-//import scala.collection.compat.immutable._
 import scala.concurrent.duration._
 
 class JaegerSpanCompleterSpec extends BaseJaegerSpec {
