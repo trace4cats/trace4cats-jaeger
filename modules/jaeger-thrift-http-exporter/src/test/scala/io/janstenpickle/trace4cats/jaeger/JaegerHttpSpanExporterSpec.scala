@@ -16,7 +16,7 @@ class JaegerHttpSpanExporterSpec extends BaseJaegerSpec {
         batch.spans.map(span =>
           span.copy(
             serviceName = process.serviceName,
-            attributes = (process.attributes ++ span.attributes) -- excludedTagKeys,
+            attributes = process.attributes ++ span.attributes -- excludedTagKeys,
             start = Instant.now(),
             end = Instant.now()
           )

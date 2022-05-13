@@ -54,7 +54,7 @@ object JaegerHttpSpanExporter {
     Uri.fromString(s"$protocol://$host:$port/api/traces").liftTo[F].flatMap(uri => apply(client, process, uri))
 
   def apply[F[_]: Async, G[_]: Foldable](client: Client[F], process: TraceProcess, uri: Uri): F[SpanExporter[F, G]] =
-    Async[F].catchNonFatal(new TSerializer()).map { implicit serializer: TSerializer =>
+    Async[F].catchNonFatal(new TSerializer).map { implicit serializer: TSerializer =>
       val jprocess = JaegerSpan.convert(process)
       HttpSpanExporter[F, G, JaegerBatch](client, uri, (batch: Batch[G]) => makeBatch[G](jprocess, batch), thriftBinary)
     }
