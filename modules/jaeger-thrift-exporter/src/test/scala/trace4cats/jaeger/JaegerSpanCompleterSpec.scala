@@ -1,11 +1,12 @@
-package io.janstenpickle.trace4cats.jaeger
+package trace4cats.jaeger
 
 import java.time.Instant
+
 import cats.effect.IO
 import fs2.Chunk
-import io.janstenpickle.trace4cats.`export`.{CompleterConfig, SemanticTags}
-import io.janstenpickle.trace4cats.model.{Batch, CompletedSpan, TraceProcess}
-import io.janstenpickle.trace4cats.test.jaeger.BaseJaegerSpec
+import trace4cats.model.{CompletedSpan, TraceProcess}
+import trace4cats.test.jaeger.BaseJaegerSpec
+import trace4cats.{Batch, CompleterConfig, SemanticTags}
 
 import scala.concurrent.duration._
 

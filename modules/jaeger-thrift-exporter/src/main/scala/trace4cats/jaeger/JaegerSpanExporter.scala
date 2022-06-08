@@ -1,4 +1,4 @@
-package io.janstenpickle.trace4cats.jaeger
+package trace4cats.jaeger
 
 import cats.Foldable
 import cats.effect.kernel.syntax.async._
@@ -7,8 +7,8 @@ import cats.syntax.foldable._
 import cats.syntax.functor._
 import io.jaegertracing.thrift.internal.senders.UdpSender
 import io.jaegertracing.thriftjava.{Process, Span}
-import io.janstenpickle.trace4cats.kernel.SpanExporter
-import io.janstenpickle.trace4cats.model.{Batch, TraceProcess}
+import trace4cats.kernel.SpanExporter
+import trace4cats.model.{Batch, TraceProcess}
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.ExecutionContext

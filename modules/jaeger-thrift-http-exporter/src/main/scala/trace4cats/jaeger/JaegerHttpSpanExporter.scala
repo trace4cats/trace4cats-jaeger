@@ -1,4 +1,4 @@
-package io.janstenpickle.trace4cats.jaeger
+package trace4cats.jaeger
 
 import cats.effect.kernel.Async
 import cats.syntax.either._
@@ -8,13 +8,13 @@ import cats.syntax.functor._
 import cats.{ApplicativeThrow, Foldable}
 import fs2.{Chunk, Stream}
 import io.jaegertracing.thriftjava.{Batch => JaegerBatch, Process, Span}
-import io.janstenpickle.trace4cats.`export`.HttpSpanExporter
-import io.janstenpickle.trace4cats.kernel.SpanExporter
-import io.janstenpickle.trace4cats.model.{Batch, TraceProcess}
 import org.apache.thrift.TSerializer
 import org.http4s._
 import org.http4s.client.Client
 import org.http4s.headers.`Content-Type`
+import trace4cats.HttpSpanExporter
+import trace4cats.kernel.SpanExporter
+import trace4cats.model.{Batch, TraceProcess}
 
 import scala.util.control.NonFatal
 

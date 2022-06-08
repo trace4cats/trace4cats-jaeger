@@ -1,14 +1,15 @@
-package io.janstenpickle.trace4cats.jaeger
+package trace4cats.jaeger
+
+import java.nio.ByteBuffer
+import java.util.concurrent.TimeUnit
 
 import cats.data.NonEmptyList
 import cats.syntax.show._
 import io.jaegertracing.thriftjava._
-import io.janstenpickle.trace4cats.`export`.SemanticTags
-import io.janstenpickle.trace4cats.model.AttributeValue._
-import io.janstenpickle.trace4cats.model._
+import trace4cats.SemanticTags
+import trace4cats.model.AttributeValue._
+import trace4cats.model._
 
-import java.nio.ByteBuffer
-import java.util.concurrent.TimeUnit
 import scala.jdk.CollectionConverters._
 
 private[jaeger] object JaegerSpan {
