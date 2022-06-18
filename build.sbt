@@ -38,13 +38,7 @@ lazy val `jaeger-thrift-common` =
     .settings(publishSettings)
     .settings(
       name := "trace4cats-jaeger-thrift-common",
-      libraryDependencies ++= Seq(
-        Dependencies.collectionCompat,
-        Dependencies.jaegerThrift,
-        Dependencies.trace4catsKernel,
-        Dependencies.trace4catsModel,
-        Dependencies.trace4catsExporterCommon
-      )
+      libraryDependencies ++= Seq(Dependencies.collectionCompat, Dependencies.jaegerThrift, Dependencies.trace4catsCore)
     )
 
 lazy val `jaeger-thrift-exporter` =

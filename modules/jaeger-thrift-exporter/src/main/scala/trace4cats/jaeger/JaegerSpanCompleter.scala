@@ -1,13 +1,13 @@
-package io.janstenpickle.trace4cats.jaeger
+package trace4cats.jaeger
 
 import cats.effect.kernel.{Async, Resource}
 import fs2.Chunk
+import io.jaegertracing.thrift.internal.senders.UdpSender
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
-import io.jaegertracing.thrift.internal.senders.UdpSender
-import io.janstenpickle.trace4cats.`export`.{CompleterConfig, QueuedSpanCompleter}
-import io.janstenpickle.trace4cats.kernel.SpanCompleter
-import io.janstenpickle.trace4cats.model.TraceProcess
+import trace4cats.kernel.SpanCompleter
+import trace4cats.model.TraceProcess
+import trace4cats.{CompleterConfig, QueuedSpanCompleter}
 
 import scala.concurrent.ExecutionContext
 import scala.util.Try
