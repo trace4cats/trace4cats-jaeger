@@ -11,7 +11,7 @@ object Dependencies {
     val trace4catsJaegerIntegrationTest = "0.13.1+17-8394f0da"
 
     val collectionCompat = "2.7.0"
-    val jaeger = "1.8.0"
+    val jaeger = "1.8.1"
 
     val kindProjector = "0.13.2"
     val betterMonadicFor = "0.3.1"
