@@ -10,7 +10,7 @@ object Dependencies {
     val trace4catsExporterHttp = "0.13.1+14-639b5d65"
     val trace4catsJaegerIntegrationTest = "0.13.1+17-8394f0da"
 
-    val collectionCompat = "2.7.0"
+    val collectionCompat = "2.8.0"
     val jaeger = "1.8.1"
 
     val kindProjector = "0.13.2"
