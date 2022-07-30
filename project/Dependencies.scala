@@ -2,13 +2,13 @@ import sbt._
 
 object Dependencies {
   object Versions {
-    val scala212 = "2.12.15"
+    val scala212 = "2.12.16"
     val scala213 = "2.13.8"
-    val scala3 = "3.1.2"
+    val scala3 = "3.1.3"
 
-    val trace4cats = "0.13.1+67-a7d9b849"
-    val trace4catsExporterHttp = "0.13.1+14-639b5d65"
-    val trace4catsJaegerIntegrationTest = "0.13.1+17-8394f0da"
+    val trace4cats = "0.13.1+114-c5a4b269"
+    val trace4catsExporterHttp = "0.13.1+26-3c5516ed"
+    val trace4catsJaegerIntegrationTest = "0.13.1+34-81de7eab"
 
     val collectionCompat = "2.8.1"
     val jaeger = "1.8.1"
