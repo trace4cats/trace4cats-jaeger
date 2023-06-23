@@ -18,7 +18,7 @@ class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
     val batch = Batch(Chunk(updatedSpan.build(process)))
     val completer =
       BlazeClientBuilder[IO].resource
-        .map(Logger.apply(logHeaders = true, logBody = true, logAction = Some(IO.println(_))))
+        .map(Logger.apply(logHeaders = true, logBody = false, logAction = Some(IO.println(_))))
         .flatMap { client =>
           JaegerHttpSpanCompleter[IO](
             client,

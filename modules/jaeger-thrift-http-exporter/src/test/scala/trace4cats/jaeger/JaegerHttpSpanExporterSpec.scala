@@ -1,10 +1,10 @@
 package trace4cats.jaeger
 
 import java.time.Instant
-
 import cats.effect.{IO, Resource}
 import fs2.Chunk
 import org.http4s.blaze.client.BlazeClientBuilder
+import org.http4s.client.middleware.Logger
 import trace4cats.SemanticTags
 import trace4cats.model.{Batch, TraceProcess}
 import trace4cats.test.jaeger.BaseJaegerSpec
@@ -22,9 +22,11 @@ class JaegerHttpSpanExporterSpec extends BaseJaegerSpec {
           )
         )
       )
-    val exporter = BlazeClientBuilder[IO].resource.flatMap { client =>
-      Resource.eval(JaegerHttpSpanExporter[IO, Chunk](client, process, "localhost", 14268))
-    }
+    val exporter = BlazeClientBuilder[IO].resource
+      .map(Logger.apply(logHeaders = true, logBody = false, logAction = Some(IO.println(_))))
+      .flatMap { client =>
+        Resource.eval(JaegerHttpSpanExporter[IO, Chunk](client, process, "localhost", 14268))
+      }
 
     testExporter(
       exporter,
