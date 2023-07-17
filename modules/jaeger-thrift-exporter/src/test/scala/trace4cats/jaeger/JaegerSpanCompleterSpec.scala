@@ -5,7 +5,7 @@ import cats.effect.IO
 import fs2.Chunk
 import trace4cats.model.{CompletedSpan, TraceProcess}
 import trace4cats.test.jaeger.BaseJaegerSpec
-import trace4cats.{Batch, CompleterConfig, SemanticTags, SpanCompleter}
+import trace4cats.{Batch, CompleterConfig, SemanticTags}
 
 import scala.concurrent.duration._
 
