@@ -17,7 +17,9 @@ class JaegerSpanCompleterSpec extends BaseJaegerSpec {
 
     testCompleter(
       JaegerSpanCompleter[IO](process, "localhost", 6831, config = CompleterConfig(batchTimeout = 50.millis))
-        .map[SpanCompleter[IO]](sc => (span: CompletedSpan.Builder) => IO.println(span.context.traceId) >> sc.complete(span)),
+        .map[SpanCompleter[IO]](sc =>
+          (span: CompletedSpan.Builder) => IO.println(span.context.traceId) >> sc.complete(span)
+        ),
       updatedSpan,
       process,
       batchToJaegerResponse(
