@@ -22,7 +22,9 @@ object QueuedSpanCompleter {
 
     def exportBatches(stream: Stream[F, CompletedSpan]): F[Unit] =
       stream
+        .evalTap(span => Logger[F].info(s"Stream saw: ${span.context.traceId}"))
         .groupWithin(config.batchSize, config.batchTimeout)
+        .evalTap(chunk => Logger[F].info(s"Grouped a chunk: ${chunk.map(_.context.traceId).toList}"))
         .evalMap { spans =>
           Stream
             .retry(
@@ -61,11 +63,14 @@ object QueuedSpanCompleter {
         .onFinalize(Logger[F].info("Shut down queued span completer"))
       _ <- Resource.onFinalize(errorChannel.close.void)
       _ <- Resource.onFinalize(channel.close.void)
+      _ <- Resource.onFinalize(Logger[F].info("Shutting down queued span completer..."))
     } yield new SpanCompleter[F] {
       override def complete(span: CompletedSpan.Builder): F[Unit] =
         channel
           .trySend(span.build(process))
-          .flatMap(errorChannel.trySend)
+          .flatTap(ts => Logger[F].info(s"channel.trySend for ${span.context.traceId}: $ts"))
+          .flatMap(errorChannel.send)
+          .flatTap(ts => Logger[F].info(s"errorChannel.send for ${span.context.traceId}: $ts"))
           .void
     }
   }
