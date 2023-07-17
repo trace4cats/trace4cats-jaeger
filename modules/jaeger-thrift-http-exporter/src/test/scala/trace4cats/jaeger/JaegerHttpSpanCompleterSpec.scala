@@ -7,7 +7,7 @@ import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.middleware.Logger
 import trace4cats.model.{Batch, CompletedSpan, TraceProcess}
 import trace4cats.test.jaeger.BaseJaegerSpec
-import trace4cats.{CompleterConfig, SemanticTags}
+import trace4cats.{CompleterConfig, SemanticTags, SpanCompleter}
 
 import scala.concurrent.duration._
 
@@ -26,7 +26,12 @@ class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
             "localhost",
             14268,
             config = CompleterConfig(batchTimeout = 50.millis)
-          )
+          ).map { inner =>
+            new SpanCompleter[IO] {
+              override def complete(span: CompletedSpan.Builder): IO[Unit] =
+                inner.complete(span) >> IO.sleep(1.second)
+            }
+          }
         }
 
     testCompleter(
