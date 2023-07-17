@@ -8,7 +8,7 @@ import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import trace4cats.kernel.SpanCompleter
 import trace4cats.model.TraceProcess
-import trace4cats.{CompleterConfig, QueuedSpanCompleter}
+import trace4cats.CompleterConfig
 
 object JaegerHttpSpanCompleter {
 
