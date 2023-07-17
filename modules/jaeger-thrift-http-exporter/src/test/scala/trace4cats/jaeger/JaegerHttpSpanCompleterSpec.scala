@@ -1,15 +1,15 @@
 package trace4cats.jaeger
 
 import cats.effect.IO
-import cats.effect.kernel.Resource
 import fs2.Chunk
 import org.http4s.blaze.client.BlazeClientBuilder
 import org.http4s.client.middleware.Logger
 import trace4cats.model.{Batch, CompletedSpan, TraceProcess}
 import trace4cats.test.jaeger.BaseJaegerSpec
-import trace4cats.{SemanticTags, SpanCompleter}
+import trace4cats.{CompleterConfig, SemanticTags, SpanCompleter}
 
 import java.time.Instant
+import scala.concurrent.duration._
 
 class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
   it should "Send a span to jaeger" in forAll { (span: CompletedSpan.Builder, process: TraceProcess) =>
@@ -20,14 +20,15 @@ class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
       BlazeClientBuilder[IO].resource
         .map(Logger.apply(logHeaders = true, logBody = false, logAction = Some(IO.println(_))))
         .flatMap { client =>
-          Resource
-            .eval(JaegerHttpSpanExporter[IO, Chunk](client, process, "localhost", 14268, "http"))
-            .map(exp =>
-              new SpanCompleter[IO] {
-                override def complete(span: CompletedSpan.Builder): IO[Unit] =
-                  exp.exportBatch(Batch(Chunk(span.build(process))))
-              }
-            )
+          JaegerHttpSpanCompleter[IO](
+            client,
+            process,
+            "localhost",
+            14268,
+            config = CompleterConfig(batchTimeout = 50.millis)
+          ).map[SpanCompleter[IO]](sc =>
+            (span: CompletedSpan.Builder) => IO.println(span.context.traceId) >> sc.complete(span)
+          )
         }
 
     testCompleter(
