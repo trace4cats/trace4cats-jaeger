@@ -28,7 +28,7 @@ object QueuedSpanCompleter {
         .evalMap { spans =>
           Stream
             .retry(
-              exporter.exportBatch(Batch(spans)),
+              exporter.exportBatch(Batch(spans)).guaranteeCase(ec => Logger[F].info(s"Exported: $ec")),
               delay = config.retryConfig.delay,
               nextDelay = config.retryConfig.nextDelay.calc,
               maxAttempts = config.retryConfig.maxAttempts
@@ -38,10 +38,12 @@ object QueuedSpanCompleter {
             .onError { case th =>
               Logger[F].warn(th)("Failed to export spans")
             }
+            .guaranteeCase(ec => Logger[F].info(s"Retry stream closing with $ec"))
             .uncancelable
         }
         .compile
         .drain
+        .guaranteeCase(ec => Logger[F].info(s"Span stream closing with $ec"))
 
     for {
       channel <- Resource.eval(Channel.bounded[F, CompletedSpan](realBufferSize))
@@ -58,10 +60,13 @@ object QueuedSpanCompleter {
         .compile
         .drain
         .uncancelable
+        .guaranteeCase(ec => Logger[F].info(s"Error stream closing with $ec"))
         .background
-      _ <- exportBatches(channel.stream).uncancelable.background
+      _ <- Resource.eval(Logger[F].info(s"Starting stream")) >> exportBatches(channel.stream)
+        .flatTap(_ => errorChannel.close)
+        .uncancelable
+        .background
         .onFinalize(Logger[F].info("Shut down queued span completer"))
-      _ <- Resource.onFinalize(errorChannel.close.void)
       _ <- Resource.onFinalize(channel.close.void)
       _ <- Resource.onFinalize(Logger[F].info("Shutting down queued span completer..."))
     } yield new SpanCompleter[F] {
