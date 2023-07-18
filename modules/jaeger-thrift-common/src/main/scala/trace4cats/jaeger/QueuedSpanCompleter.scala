@@ -62,11 +62,12 @@ object QueuedSpanCompleter {
         .uncancelable
         .guaranteeCase(ec => Logger[F].info(s"Error stream closing with $ec"))
         .background
-      _ <- exportBatches(channel.stream)
+      fib <- exportBatches(channel.stream)
         .flatTap(_ => errorChannel.close)
         .uncancelable
         .background
         .onFinalize(Logger[F].info("Shut down queued span completer"))
+      _ <- Resource.onFinalize(fib.void)
       _ <- Resource.onFinalize(channel.close.void)
       _ <- Resource.onFinalize(Logger[F].info("Shutting down queued span completer..."))
     } yield new SpanCompleter[F] {
