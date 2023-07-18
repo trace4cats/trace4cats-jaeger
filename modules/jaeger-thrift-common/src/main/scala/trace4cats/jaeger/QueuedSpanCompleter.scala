@@ -62,7 +62,7 @@ object QueuedSpanCompleter {
         .uncancelable
         .guaranteeCase(ec => Logger[F].info(s"Error stream closing with $ec"))
         .background
-      _ <- Resource.eval(Logger[F].info(s"Starting stream")) >> exportBatches(channel.stream)
+      _ <- exportBatches(channel.stream)
         .flatTap(_ => errorChannel.close)
         .uncancelable
         .background
