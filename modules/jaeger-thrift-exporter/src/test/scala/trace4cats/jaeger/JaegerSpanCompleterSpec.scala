@@ -1,6 +1,7 @@
 package trace4cats.jaeger
 
 import java.time.Instant
+
 import cats.effect.IO
 import fs2.Chunk
 import trace4cats.model.{CompletedSpan, TraceProcess}

@@ -15,16 +15,15 @@ class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
     val updatedSpan =
       span.copy(start = Instant.now(), end = Instant.now(), attributes = span.attributes -- excludedTagKeys)
     val batch = Batch(Chunk(updatedSpan.build(process)))
-    val completer =
-      BlazeClientBuilder[IO].resource.flatMap { client =>
-        JaegerHttpSpanCompleter[IO](
-          client,
-          process,
-          "localhost",
-          14268,
-          config = CompleterConfig(batchTimeout = 50.millis)
-        )
-      }
+    val completer = BlazeClientBuilder[IO].resource.flatMap { client =>
+      JaegerHttpSpanCompleter[IO](
+        client,
+        process,
+        "localhost",
+        14268,
+        config = CompleterConfig(batchTimeout = 50.millis)
+      )
+    }
 
     testCompleter(
       completer,
