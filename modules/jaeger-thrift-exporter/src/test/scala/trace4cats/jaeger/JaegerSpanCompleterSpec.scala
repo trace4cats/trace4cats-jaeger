@@ -5,7 +5,7 @@ import cats.effect.IO
 import fs2.Chunk
 import trace4cats.model.{CompletedSpan, TraceProcess}
 import trace4cats.test.jaeger.BaseJaegerSpec
-import trace4cats.{Batch, CompleterConfig, SemanticTags, SpanCompleter}
+import trace4cats.{Batch, CompleterConfig, SemanticTags}
 
 import scala.concurrent.duration._
 
@@ -16,10 +16,7 @@ class JaegerSpanCompleterSpec extends BaseJaegerSpec {
     val batch = Batch(Chunk(updatedSpan.build(process)))
 
     testCompleter(
-      JaegerSpanCompleter[IO](process, "localhost", 6831, config = CompleterConfig(batchTimeout = 50.millis))
-        .map[SpanCompleter[IO]](sc =>
-          (span: CompletedSpan.Builder) => IO.println(span.context.traceId) >> sc.complete(span)
-        ),
+      JaegerSpanCompleter[IO](process, "localhost", 6831, config = CompleterConfig(batchTimeout = 50.millis)),
       updatedSpan,
       process,
       batchToJaegerResponse(

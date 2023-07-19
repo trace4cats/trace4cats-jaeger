@@ -3,10 +3,9 @@ package trace4cats.jaeger
 import cats.effect.IO
 import fs2.Chunk
 import org.http4s.blaze.client.BlazeClientBuilder
-import org.http4s.client.middleware.Logger
 import trace4cats.model.{Batch, CompletedSpan, TraceProcess}
 import trace4cats.test.jaeger.BaseJaegerSpec
-import trace4cats.{CompleterConfig, SemanticTags, SpanCompleter}
+import trace4cats.{CompleterConfig, SemanticTags}
 
 import java.time.Instant
 import scala.concurrent.duration._
@@ -17,19 +16,15 @@ class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
       span.copy(start = Instant.now(), end = Instant.now(), attributes = span.attributes -- excludedTagKeys)
     val batch = Batch(Chunk(updatedSpan.build(process)))
     val completer =
-      BlazeClientBuilder[IO].resource
-        .map(Logger.apply(logHeaders = true, logBody = false, logAction = Some(IO.println(_))))
-        .flatMap { client =>
-          JaegerHttpSpanCompleter[IO](
-            client,
-            process,
-            "localhost",
-            14268,
-            config = CompleterConfig(batchTimeout = 50.millis)
-          ).map[SpanCompleter[IO]](sc =>
-            (span: CompletedSpan.Builder) => IO.println(span.context.traceId) >> sc.complete(span)
-          )
-        }
+      BlazeClientBuilder[IO].resource.flatMap { client =>
+        JaegerHttpSpanCompleter[IO](
+          client,
+          process,
+          "localhost",
+          14268,
+          config = CompleterConfig(batchTimeout = 50.millis)
+        )
+      }
 
     testCompleter(
       completer,
