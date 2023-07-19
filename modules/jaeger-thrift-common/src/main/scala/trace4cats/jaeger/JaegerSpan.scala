@@ -1,7 +1,8 @@
 package trace4cats.jaeger
 
 import java.nio.ByteBuffer
-import java.util.concurrent.TimeUnit
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 import cats.data.NonEmptyList
 import cats.syntax.show._
@@ -55,8 +56,8 @@ private[jaeger] object JaegerSpan {
   def convert(span: CompletedSpan): Span = {
     val (traceIdHigh, traceIdLow) = traceIdToLongs(span.context.traceId)
 
-    val startMicros = TimeUnit.MILLISECONDS.toMicros(span.start.toEpochMilli)
-    val endMicros = TimeUnit.MILLISECONDS.toMicros(span.end.toEpochMilli)
+    val startMicros = ChronoUnit.MICROS.between(Instant.EPOCH, span.start)
+    val duration = ChronoUnit.MICROS.between(span.start, span.end)
 
     val thriftSpan = new Span(
       traceIdLow,
@@ -69,7 +70,7 @@ private[jaeger] object JaegerSpan {
         case SampleDecision.Drop => 1
       },
       startMicros,
-      endMicros - startMicros
+      duration
     )
 
     thriftSpan

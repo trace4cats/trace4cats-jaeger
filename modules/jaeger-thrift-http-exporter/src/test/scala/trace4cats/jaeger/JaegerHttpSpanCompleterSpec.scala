@@ -1,7 +1,5 @@
 package trace4cats.jaeger
 
-import java.time.Instant
-
 import cats.effect.IO
 import fs2.Chunk
 import org.http4s.blaze.client.BlazeClientBuilder
@@ -9,6 +7,7 @@ import trace4cats.model.{Batch, CompletedSpan, TraceProcess}
 import trace4cats.test.jaeger.BaseJaegerSpec
 import trace4cats.{CompleterConfig, SemanticTags}
 
+import java.time.Instant
 import scala.concurrent.duration._
 
 class JaegerHttpSpanCompleterSpec extends BaseJaegerSpec {
