@@ -13,7 +13,7 @@ object Dependencies {
     val collectionCompat = "2.11.0"
     val jaeger = "1.8.1"
 
-    val kindProjector = "0.13.2"
+    val kindProjector = "0.13.3"
     val betterMonadicFor = "0.3.1"
   }
 
